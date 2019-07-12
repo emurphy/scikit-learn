@@ -761,6 +761,7 @@ class GaussianMixture(BaseMixture):
             print(f"M-step weights:{linesep}{weights})")
             print(f"means:{linesep}{means}")
             print(f"covariances:{linesep}{covariances}")
-            print(f"cov trace:{linesep}{np.trace(covariances)}")
-            print(f"cov trace sqrt:{linesep}{np.sqrt(np.trace(covariances))}")
+            if self.covariance_type != 'spherical':
+                print(f"cov trace:{linesep}{np.trace(covariances)}")
+                print(f"cov trace sqrt:{linesep}{np.sqrt(np.trace(covariances))}")
 
