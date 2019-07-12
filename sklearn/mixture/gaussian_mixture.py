@@ -5,6 +5,7 @@
 # License: BSD 3 clause
 
 import numpy as np
+from os import linesep
 
 from scipy import linalg
 
@@ -675,6 +676,7 @@ class GaussianMixture(BaseMixture):
         self.weights_ /= n_samples
         self.precisions_cholesky_ = _compute_precision_cholesky(
             self.covariances_, self.covariance_type)
+        self._print_verbose_m_step(self.weights_, self.means_, self.covariances_)
 
     def _estimate_log_prob(self, X):
         return _estimate_log_gaussian_prob(
@@ -753,3 +755,8 @@ class GaussianMixture(BaseMixture):
             The lower the better.
         """
         return -2 * self.score(X) * X.shape[0] + 2 * self._n_parameters()
+
+    def _print_verbose_m_step(self, weights, means, covariances):
+        if self.verbose >=3:
+            print(f"M-step weights:{linesep}{weights}{linesep}means:{linesep}{means}{linesep}covariances:{linesep}{covariances}")
+

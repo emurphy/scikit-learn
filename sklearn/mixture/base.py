@@ -6,6 +6,7 @@
 
 import warnings
 from abc import ABCMeta, abstractmethod
+from os import linesep
 from time import time
 
 import numpy as np
@@ -239,7 +240,10 @@ class BaseMixture(DensityMixin, BaseEstimator, metaclass=ABCMeta):
                 prev_lower_bound = lower_bound
 
                 log_prob_norm, log_resp = self._e_step(X)
+                self._print_verbose_e_step(n_iter, log_prob_norm, log_resp)
+
                 self._m_step(X, log_resp)
+
                 lower_bound = self._compute_lower_bound(
                     log_resp, log_prob_norm)
 
@@ -534,3 +538,7 @@ class BaseMixture(DensityMixin, BaseEstimator, metaclass=ABCMeta):
         elif self.verbose >= 2:
             print("Initialization converged: %s\t time lapse %.5fs\t ll %.5f" %
                   (self.converged_, time() - self._init_prev_time, ll))
+
+    def _print_verbose_e_step(self, n_iter, log_prob_norm, log_resp):
+        if self.verbose >= 3:
+            print(f"E-step Iter {n_iter}:{linesep}Mean probabilities:{linesep}{np.exp(log_prob_norm)}{linesep}Responsibilities:{linesep}{np.exp(log_resp)}")
