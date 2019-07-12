@@ -758,5 +758,9 @@ class GaussianMixture(BaseMixture):
 
     def _print_verbose_m_step(self, weights, means, covariances):
         if self.verbose >=3:
-            print(f"M-step weights:{linesep}{weights}{linesep}means:{linesep}{means}{linesep}covariances:{linesep}{covariances}")
+            print(f"M-step weights:{linesep}{weights})")
+            print(f"means:{linesep}{means}")
+            print(f"covariances:{linesep}{covariances}")
+            print(f"cov trace:{linesep}{np.trace(covariances)}")
+            print(f"cov trace sqrt:{linesep}{np.sqrt(np.trace(covariances))}")
 
