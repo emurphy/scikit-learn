@@ -547,6 +547,4 @@ class BaseMixture(DensityMixin, BaseEstimator, metaclass=ABCMeta):
             print(f"E-step Iter {n_iter}:{linesep}Mean probabilities:{linesep}{np.exp(log_prob_norm)}")
             print(f"Responsibilities:{linesep}{np.exp(log_resp)}")
             if self.latex_file is not None:
-                self.latex_file.write(f"E-step Iteration {n_iter} Responsibilities\n")
-                self.latex_file.write(bmatrix(np.exp(log_resp)))
-                self.latex_file.write("\n")
+                self.latex_file.write(f"{n_iter} & ${bmatrix(np.exp(log_resp))}$ & \n\n")
