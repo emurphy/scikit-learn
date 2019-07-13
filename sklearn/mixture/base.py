@@ -18,6 +18,8 @@ from ..exceptions import ConvergenceWarning
 from ..utils import check_array, check_random_state
 from ..utils.fixes import logsumexp
 
+from .bmatrix import bmatrix
+
 
 def _check_shape(param, param_shape, name):
     """Validate the shape of the input parameter 'param'.
@@ -71,7 +73,7 @@ class BaseMixture(DensityMixin, BaseEstimator, metaclass=ABCMeta):
 
     def __init__(self, n_components, tol, reg_covar,
                  max_iter, n_init, init_params, random_state, warm_start,
-                 verbose, verbose_interval):
+                 verbose, verbose_interval, latex_file=None):
         self.n_components = n_components
         self.tol = tol
         self.reg_covar = reg_covar
@@ -82,6 +84,7 @@ class BaseMixture(DensityMixin, BaseEstimator, metaclass=ABCMeta):
         self.warm_start = warm_start
         self.verbose = verbose
         self.verbose_interval = verbose_interval
+        self.latex_file=latex_file
 
     def _check_initial_parameters(self, X):
         """Check values of the basic parameters.
@@ -541,4 +544,9 @@ class BaseMixture(DensityMixin, BaseEstimator, metaclass=ABCMeta):
 
     def _print_verbose_e_step(self, n_iter, log_prob_norm, log_resp):
         if self.verbose >= 3:
-            print(f"E-step Iter {n_iter}:{linesep}Mean probabilities:{linesep}{np.exp(log_prob_norm)}{linesep}Responsibilities:{linesep}{np.exp(log_resp)}")
+            print(f"E-step Iter {n_iter}:{linesep}Mean probabilities:{linesep}{np.exp(log_prob_norm)}")
+            print(f"Responsibilities:{linesep}{np.exp(log_resp)}")
+            if self.latex_file is not None:
+                self.latex_file.write(f"E-step Iteration {n_iter} Responsibilities\n")
+                self.latex_file.write(bmatrix(np.exp(log_resp)))
+                self.latex_file.write("\n")
