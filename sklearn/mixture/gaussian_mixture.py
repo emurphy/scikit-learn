@@ -771,6 +771,9 @@ class GaussianMixture(BaseMixture):
                 print(f"cov trace sqrt:{linesep}{np.sqrt(np.trace(covariances))}")
             if self.latex_file is not None:
                 self.latex_file.write(f"${bmatrix(means.T)}$ & \n\n")
-                self.latex_file.write(f"${bmatrix(np.sqrt(covariances))}$ & \n\n")
+                if self.covariance_type == 'full' and len(covariances) > 2:
+                    self.latex_file.write(f"${bmatrix(np.sqrt(covariances[0]))}$ & \n\n")
+                else:
+                    self.latex_file.write(f"${bmatrix(np.sqrt(covariances))}$ & \n\n")
                 self.latex_file.write(f"${bmatrix(weights)}$ \\\\ \n\n")
 
