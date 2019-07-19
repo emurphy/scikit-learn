@@ -5,6 +5,7 @@
 # License: BSD 3 clause
 
 import numpy as np
+from os import linesep
 
 from scipy import linalg
 
@@ -13,6 +14,7 @@ from ..utils import check_array
 from ..utils.validation import check_is_fitted
 from ..utils.extmath import row_norms
 
+from .bmatrix import bmatrix
 
 ###############################################################################
 # Gaussian mixture shape checkers used by the GaussianMixture class
@@ -589,17 +591,19 @@ class GaussianMixture(BaseMixture):
                  reg_covar=1e-6, max_iter=100, n_init=1, init_params='kmeans',
                  weights_init=None, means_init=None, precisions_init=None,
                  random_state=None, warm_start=False,
-                 verbose=0, verbose_interval=10):
+                 verbose=0, verbose_interval=10, latex_file=None, latex_resp=False):
         super().__init__(
             n_components=n_components, tol=tol, reg_covar=reg_covar,
             max_iter=max_iter, n_init=n_init, init_params=init_params,
             random_state=random_state, warm_start=warm_start,
-            verbose=verbose, verbose_interval=verbose_interval)
+            verbose=verbose, verbose_interval=verbose_interval,
+            latex_file=latex_file, latex_resp=latex_resp)
 
         self.covariance_type = covariance_type
         self.weights_init = weights_init
         self.means_init = means_init
         self.precisions_init = precisions_init
+
 
     def _check_parameters(self, X):
         """Check the Gaussian mixture parameters are well defined."""
@@ -675,6 +679,7 @@ class GaussianMixture(BaseMixture):
         self.weights_ /= n_samples
         self.precisions_cholesky_ = _compute_precision_cholesky(
             self.covariances_, self.covariance_type)
+        self._print_verbose_m_step(self.weights_, self.means_, self.covariances_)
 
     def _estimate_log_prob(self, X):
         return _estimate_log_gaussian_prob(
@@ -753,3 +758,22 @@ class GaussianMixture(BaseMixture):
             The lower the better.
         """
         return -2 * self.score(X) * X.shape[0] + 2 * self._n_parameters()
+
+    def _print_verbose_m_step(self, weights, means, covariances):
+        if self.verbose >=3:
+            print(f"M-step weights:{linesep}{weights})")
+            print(f"means:{linesep}{means}")
+            print(f"covariances:{linesep}{covariances}")
+            if self.covariance_type == 'spherical':
+                print(f"cov sqrt:{linesep}{np.sqrt(covariances)}")
+            else:
+                print(f"cov trace:{linesep}{np.trace(covariances)}")
+                print(f"cov trace sqrt:{linesep}{np.sqrt(np.trace(covariances))}")
+            if self.latex_file is not None:
+                self.latex_file.write(f"${bmatrix(means.T)}$ & \n\n")
+                if self.covariance_type == 'full' and len(covariances) > 2:
+                    self.latex_file.write(f"${bmatrix(np.sqrt(covariances[0]))}$ & \n\n")
+                else:
+                    self.latex_file.write(f"${bmatrix(np.sqrt(covariances))}$ & \n\n")
+                self.latex_file.write(f"${bmatrix(weights)}$ \\\\ \n\n")
+

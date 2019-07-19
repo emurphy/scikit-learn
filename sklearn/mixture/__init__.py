@@ -6,5 +6,5 @@ from .gaussian_mixture import GaussianMixture
 from .bayesian_mixture import BayesianGaussianMixture
 
 
-__all__ = ['GaussianMixture',
+__all__ = ['bmatrix', 'GaussianMixture',
            'BayesianGaussianMixture']
