@@ -255,6 +255,7 @@ class BaseMixture(DensityMixin, BaseEstimator, metaclass=ABCMeta):
 
                 if abs(change) < self.tol:
                     self.converged_ = True
+                    self.resp = np.exp(log_resp)
                     break
 
             self._print_verbose_msg_init_end(lower_bound)
@@ -547,4 +548,5 @@ class BaseMixture(DensityMixin, BaseEstimator, metaclass=ABCMeta):
             print(f"E-step Iter {n_iter}:{linesep}Mean probabilities:{linesep}{np.exp(log_prob_norm)}")
             print(f"Responsibilities:{linesep}{np.exp(log_resp)}")
             if self.latex_file is not None:
-                self.latex_file.write(f"{n_iter} & ${bmatrix(np.exp(log_resp.T))}$ & \n\n")
+                # self.latex_file.write(f"{n_iter} & ${bmatrix(np.exp(log_resp.T))}$ & \n\n")
+                self.latex_file.write(f"{n_iter} & \n\n")
