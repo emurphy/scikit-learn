@@ -73,7 +73,7 @@ class BaseMixture(DensityMixin, BaseEstimator, metaclass=ABCMeta):
 
     def __init__(self, n_components, tol, reg_covar,
                  max_iter, n_init, init_params, random_state, warm_start,
-                 verbose, verbose_interval, latex_file=None):
+                 verbose, verbose_interval, latex_file=None, latex_resp=True):
         self.n_components = n_components
         self.tol = tol
         self.reg_covar = reg_covar
@@ -85,6 +85,7 @@ class BaseMixture(DensityMixin, BaseEstimator, metaclass=ABCMeta):
         self.verbose = verbose
         self.verbose_interval = verbose_interval
         self.latex_file=latex_file
+        self.latex_resp=latex_resp
 
     def _check_initial_parameters(self, X):
         """Check values of the basic parameters.
@@ -548,5 +549,7 @@ class BaseMixture(DensityMixin, BaseEstimator, metaclass=ABCMeta):
             print(f"E-step Iter {n_iter}:{linesep}Mean probabilities:{linesep}{np.exp(log_prob_norm)}")
             print(f"Responsibilities:{linesep}{np.exp(log_resp)}")
             if self.latex_file is not None:
-                # self.latex_file.write(f"{n_iter} & ${bmatrix(np.exp(log_resp.T))}$ & \n\n")
-                self.latex_file.write(f"{n_iter} & \n\n")
+                if self.latex_resp:
+                    self.latex_file.write(f"{n_iter} & ${bmatrix(np.exp(log_resp.T))}$ & \n\n")
+                else:
+                    self.latex_file.write(f"{n_iter} & \n\n")
